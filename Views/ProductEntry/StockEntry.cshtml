@@ -1,0 +1,213 @@
+﻿@model SIBF.UserManagement.Models.StockModel
+
+@{
+    ViewBag.Title = "StockEntry";
+    int prodID = 0;
+}
+
+<div class="container">
+    <div class="row">
+        <h2>Add Stock</h2>
+        @if (ViewBag.SuccessMsg != null)
+        {
+            <p class="text-info">@ViewBag.SuccessMsg</p>
+        }
+        else if (ViewBag.Failuremessage != null)
+        {
+            <p class="text-danger">@ViewBag.Failuremessage</p>
+        }
+        <hr />
+        <div class="col-lg-4">
+            @using (Html.BeginForm(new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-horizontal">
+                    @if (ViewBag.SuccessMsg != null)
+                    {
+                        <p style="color:forestgreen">Product created successfully!</p>
+                    }
+                    <hr />
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.ProductID, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.DropDownListFor(model => model.FormSubmit.ProductID, new SelectList(ViewBag.ProductList, "ProductID", "ProductName"), new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.Quantity, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.FormSubmit.Quantity, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.FormSubmit.Quantity, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.ManufactureDate, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.FormSubmit.ManufactureDate, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.FormSubmit.ManufactureDate, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.ExpiryDate, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.FormSubmit.ExpiryDate, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.FormSubmit.ExpiryDate, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.BarCode, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.FormSubmit.BarCode, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.FormSubmit.BarCode, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <!--
+                    <div class="form-group">
+                         Html.LabelFor(model => model.Img, htmlAttributes: new { class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            Html.EditorFor(model => model.Img, new { htmlAttributes = new { class = "form-control" } })
+                            Html.ValidationMessageFor(model => model.Img, "", new { class = "text-danger" })
+                        </div>
+                    </div>
+                        -->
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            @Html.HiddenFor(model => model.FormSubmit.StockID)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-4 col-md-8">
+                            <input type="submit" id="submit" value="Create" class="btn btn-default" />
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-lg-8">
+            <p class="alert-info" id="deleteMsg"></p>
+            <table class="table table-responsive table-bordered table-striped" style="background-color:#fff;">
+                <tr>
+                    <th style="text-align: center;">Product</th>
+                    <th style="text-align: center;">Quantity</th>
+                    <th style="text-align: center;">Manufacture Date</th>
+                    <th style="text-align: center;">Expiry Date</th>
+                    <th style="text-align: center;">Barcode</th>
+                    <th style="text-align: center;">Created Date</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+                
+                @foreach (var item in Model.DisplayData.AllStockData)
+                {
+                    string allInfo = item.ProductName + '^'+ item.ProductID + '^' + item.Quantity + '^' + item.ManufactureDate + '^' +
+                                     item.ExpiryDate + '^' + item.BarCode;
+                    @Html.HiddenFor(modelItem => allInfo, new { id = "allInfo_" + @item.StockID })
+                    
+                    <tr id="row_@item.StockID">
+                        <td id="col1_@item.StockID">
+                            @Html.DisplayFor(modelItem => item.ProductName) (@Html.DisplayFor(modelItem => item.SubCategoryName) > @Html.DisplayFor(modelItem => item.CategoryName))
+                        </td>
+                        <td id="col2_@item.StockID">
+                            @Html.DisplayFor(modelItem => item.Quantity)
+                        </td>
+                        <td id="col3_@item.StockID">
+                            @Html.DisplayFor(modelItem => item.ManufactureDate)
+                        </td>
+                        <td id="col4_@item.StockID">
+                            @Html.DisplayFor(modelItem => item.ExpiryDate)
+                        </td>
+                        <td id="col5_@item.StockID">
+                            @Html.DisplayFor(modelItem => item.BarCode)
+                        </td>
+                        <td id="col5_@item.StockID">
+                            @Html.DisplayFor(modelItem => item.CreatedOn)
+                        </td>
+                        <td>
+                            <a href="#" class="editElementByIdFromTable" id="edit_@item.StockID">
+                                <img src="@Url.Content("~/Content/Images/edit.ico")" , alt="Delete" />
+                            </a>
+                        </td>
+                        <td class="text-center">
+                            <a href="#" class="deleteElement" id="@item.StockID">
+                                <img src="@Url.Content("~/Content/Images/delete.ico")" , alt="Delete" />
+                            </a>
+                        </td>
+                    </tr>
+                    }
+            </table>
+            <br />
+
+        </div>
+    </div>
+</div>
+<script>
+$(document).ready(function () {
+    $("#FormSubmit_StockID").val('0');
+$(".deleteElement").click(function () {
+    selRow = this.id;
+    seletedElementData = $.trim($("#col1_" + selRow).html());
+    resultClick = confirm("You are sure you want to delete : " + seletedElementData);
+    if (resultClick == true) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("DeleteStock")',
+            dataType: 'json',
+            data: {
+                id: selRow
+            },
+            success: function (data) {
+                if (data == true) {
+                    setRowSeleted = "#row_" + selRow;
+                    $(setRowSeleted).remove();
+                    $("#deleteMsg").html('Delete successfully');
+                }
+                else {
+                    $("#deleteMsg").html('Delete is not possiable as it dependent products');
+                }
+            },
+            error: function (ex) {
+                var r = jQuery.toString(response.responseText);
+                alert("Message: " + r.Message);
+                alert("StackTrace: " + r.StackTrace);
+                alert("ExceptionType: " + r.ExceptionType);
+            }
+        });
+    }
+    else {
+        return false;
+    }
+});
+
+
+$(".editElementByIdFromTable").click(function () {
+    selRow = this.id;
+    var selRow = selRow.split("_");
+    seletedName = $.trim($("#col1_" + selRow[1]).html());
+    resultClick = confirm("You are sure you want to edit : " + seletedName);
+    seletedData = $.trim($("#allInfo_" + selRow[1]).val());
+    var selRowInfo = seletedData.split("^");
+    $("#FormSubmit_ProductID").prepend("<option value='" + selRowInfo[1] + "'>" + selRowInfo[0] + "</option>").val(selRowInfo[1]);
+    $("#FormSubmit_StockID").val(selRow[1]);
+    $("#FormSubmit_Quantity").val(selRowInfo[2]);
+
+    selMfgdate = selRowInfo[3].split("/");
+    rselMfgdate = selMfgdate[2] + '-' + selMfgdate[0] + '-' + selMfgdate[1];
+
+    selExdate = selRowInfo[4].split("/");
+    rselExdate = selExdate[2] + '-' + selExdate[0] + '-' + selExdate[1];
+
+    $("#FormSubmit_ManufactureDate").val(rselMfgdate);
+    $("#FormSubmit_ExpiryDate").val(rselExdate);
+    $("#FormSubmit_BarCode").val(selRowInfo[5]);
+    $("#submit").val("Edit");
+});
+
+
+});
+</script>

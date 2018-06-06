@@ -1,0 +1,117 @@
+﻿@model SIBF.UserManagement.Models.Employee
+
+@{
+    ViewBag.Title = "RegisterEmployee";
+}
+<div class="container">
+    <div class="row">
+        <h2>Register Employee</h2>
+        @if (ViewBag.SuccessMsg != null)
+        {
+            <p class="text-info">@ViewBag.SuccessMsg</p>
+        }
+        else if (ViewBag.Failuremessage != null)
+        {
+            <p class="text-danger">@ViewBag.Failuremessage</p>
+        }
+        <p class="text-danger" id="validationMsg"></p>
+        <hr />
+        <div class="col-lg-6">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-horizontal">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.CompanyName, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.DropDownListFor(model => model.FormSubmit.CompanyId, new SelectList(ViewBag.Company, "CompanyId", "CompanyShortName", 1), "Please Select Company", new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.DepartmentName, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.DropDownListFor(model => model.FormSubmit.DepratmentId, new SelectList(ViewBag.Department, "DepartmentID", "DepartmentName", 1), "Please Select Department", new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.UserRoll, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                           @Html.DropDownListFor(model => model.FormSubmit.UserRoll, new SelectList(ViewBag.UserRoles, "Name", "Name", 1), "Please Select Designation", new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.UserName, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.FormSubmit.UserName, new { htmlAttributes = new { @class = "form-control"} })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.Email, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.FormSubmit.Email, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", } })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-4 col-md-8">
+                            <input type="submit" id="submit" value="Register" class="btn btn-default" />
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-lg-6">
+            <p class="alert-info" id="deleteMsg"></p>
+           
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#FormSubmit_UserRoll").change(function () {
+
+            var selectedDesignaiton=$("#FormSubmit_UserRoll").val();
+            if (selectedDesignaiton == "Bell Boy" || selectedDesignaiton == "Cleaner")
+            { $("#FormSubmit_Email").attr("readonly", true); }
+            else
+            { $("#FormSubmit_Email").attr("readonly", false); }
+        });
+
+        $("#FormSubmit_CompanyId").change(function () {
+            var id = this.value;
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetDepartmentByCompanyID")',
+                dataType: 'json',
+                data: {
+                    id: id
+                },
+                success: function (data) {
+                    $('select#FormSubmit_DepratmentId').empty();
+                    $.each(data, function (key, item) {
+                        $('#FormSubmit_DepratmentId').append(
+                        $('<option></option>').val(item.DepartmentID).html(item.DepartmentName));
+                    });
+                },
+                error: function (ex) {
+                    var r = jQuery.toString(response.responseText);
+                    alert("Message: " + r.Message);
+                    alert("StackTrace: " + r.StackTrace);
+                    alert("ExceptionType: " + r.ExceptionType);
+                }
+            });
+        });
+
+      
+
+    });
+</script>

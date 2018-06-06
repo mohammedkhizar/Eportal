@@ -1,0 +1,243 @@
+﻿@model SIBF.UserManagement.Models.SupplierModel
+
+@{
+    ViewBag.Title = "Supplier Information";
+}
+
+<div class="container">
+    <div class="row">
+        <h2>Create Where House</h2>
+        @if (ViewBag.SuccessMsg != null)
+        {
+            <p class="text-info">@ViewBag.SuccessMsg</p>
+        }
+        else if (ViewBag.Failuremessage != null)
+        {
+            <p class="text-danger">@ViewBag.Failuremessage</p>
+        }
+        <hr />
+        <div class="col-lg-4">
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-horizontal">
+                  
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubmitFormModel.FullName, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.SubmitFormModel.FullName, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.SubmitFormModel.FullName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubmitFormModel.Currency, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.SubmitFormModel.Currency, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.SubmitFormModel.Currency, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubmitFormModel.Address, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.SubmitFormModel.Address, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.SubmitFormModel.Address, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubmitFormModel.State, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.DropDownListFor(model => model.SubmitFormModel.State, new SelectList(ViewBag.StatesList, "StateName", "StateName"), new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubmitFormModel.PoCode, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.SubmitFormModel.PoCode, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.SubmitFormModel.PoCode, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubmitFormModel.Website, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.SubmitFormModel.Website, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.SubmitFormModel.Website, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubmitFormModel.Email, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.SubmitFormModel.Email, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.SubmitFormModel.Email, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubmitFormModel.ContactNumber, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.SubmitFormModel.ContactNumber, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.SubmitFormModel.ContactNumber, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubmitFormModel.ContactPerson, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.SubmitFormModel.ContactPerson, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.SubmitFormModel.ContactPerson, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubmitFormModel.Description, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.SubmitFormModel.Description, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.SubmitFormModel.Description, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            @Html.HiddenFor(model => model.SubmitFormModel.SupplierID)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-4 col-md-8">
+                            <input type="submit" id="submit" value="Create" class="btn btn-default" />
+                        </div>
+                    </div>
+                </div>
+            }
+            </div>
+        <div class="col-lg-8">
+            <p class="alert-info" id="deleteMsg"></p>
+            @using (Html.BeginForm())
+            {
+
+                <table class="table table-responsive table-bordered table-striped" style="background-color:#fff;">
+                    <tr>
+                        <th style="text-align: center;">Full Name</th>
+                        <th style="text-align: center;">Address</th>
+                        <th style="text-align: center;">Email</th>
+                        <th style="text-align: center;">Website</th>
+                        <th style="text-align: center;">Contact Person</th>
+                        <th style="text-align: center;">Contact</th>
+                        
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+
+                    @foreach (var item in Model.DisplayModel.SupplierData)
+                    {
+                        string allInfo = item.FullName + '^' +item.Currency + '^' +item.Address + '^' +
+                                         item.State + '^' +item.PoCode + '^' +item.Email + '^' +item.Website + '^' +item.ContactPerson + '^' +
+                                         item.ContactNumber + '^' + item.Description;
+                        @Html.HiddenFor(modelItem => allInfo, new { id = "allInfo_" + @item.SupplierID })
+                        <tr id="row_@item.SupplierID">
+                            <td id="name_@item.SupplierID">
+                                @Html.DisplayFor(modelItem => item.FullName) (@Html.DisplayFor(modelItem => item.Currency))
+                            </td>
+                            <td id="address_@item.SupplierID">
+                                @Html.DisplayFor(modelItem => item.Address), @Html.DisplayFor(modelItem => item.State), @Html.DisplayFor(modelItem => item.PoCode)
+                            </td>
+                            <td id="email_@item.SupplierID">
+                                @Html.DisplayFor(modelItem => item.Email)
+                            </td>
+                            <td id="website_@item.SupplierID">
+                                @Html.DisplayFor(modelItem => item.Website)
+                            </td>
+                            <td id="contactperson_@item.SupplierID">
+                                @Html.DisplayFor(modelItem => item.ContactPerson)
+                            </td>
+                            <td id="contactnumber_@item.SupplierID">
+                                @Html.DisplayFor(modelItem => item.ContactNumber)
+                            </td>
+                            <td>
+                                <a href="#" class="editElementByIdFromTable" id="edit_@item.SupplierID">
+                                    <img src="@Url.Content("~/Content/Images/edit.ico")" , alt="Delete" />
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="#" class="deleteElement" id="@item.SupplierID">
+                                    <img src="@Url.Content("~/Content/Images/delete.ico")" , alt="Delete" />
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </table>
+                <br />
+
+            }
+        </div>
+</div>
+</div>
+<script>
+$(document).ready(function () {
+$("#SubmitFormModel_SupplierID").val('0');
+$(".deleteElement").click(function () {
+    selRow = this.id;
+    seletedElementData = $.trim($("#name_" + selRow).html());
+    resultClick = confirm("You are sure you want to delete : " + seletedElementData);
+    if (resultClick == true) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("DeleteSupplier")',
+            dataType: 'json',
+            data: {
+                id: selRow
+            },
+            success: function (data) {
+                if (data == true) {
+                    setRowSeleted = "#row_" + selRow;
+                    $(setRowSeleted).remove();
+                    $("#deleteMsg").html('Delete successfully');
+                }
+                else {
+                    $("#deleteMsg").html('Delete is not possiable as it dependent products');
+                }
+            },
+            error: function (ex) {
+                var r = jQuery.toString(response.responseText);
+                alert("Message: " + r.Message);
+                alert("StackTrace: " + r.StackTrace);
+                alert("ExceptionType: " + r.ExceptionType);
+            }
+        });
+    }
+    else {
+        return false;
+    }
+});
+
+
+$(".editElementByIdFromTable").click(function () {
+    selRow = this.id;
+    var selRow = selRow.split("_");
+    seletedName = $.trim($("#name_" + selRow[1]).html());
+    resultClick = confirm("You are sure you want to edit : " + seletedName);
+    seletedData = $.trim($("#allInfo_" + selRow[1]).val());
+    var selRowInfo = seletedData.split("^");
+    $("#SubmitFormModel_SupplierID").val(selRow[1]);
+    $("#SubmitFormModel_FullName").val(selRowInfo[0]);
+    $("#SubmitFormModel_Currency").val(selRowInfo[1]);
+    $("#SubmitFormModel_Address").val(selRowInfo[2]);
+    $("#SubmitFormModel_PoCode").val(selRowInfo[4]);
+    $("#SubmitFormModel_State").prepend("<option value='" + selRowInfo[3] + "'>" + selRowInfo[3] + "</option>").val(selRowInfo[3]);
+    $("#SubmitFormModel_Email").val(selRowInfo[5]);
+    $("#SubmitFormModel_ContactPerson").val(selRowInfo[7]);
+    $("#SubmitFormModel_ContactNumber").val(selRowInfo[8]);
+    $("#SubmitFormModel_Description").val(selRowInfo[9]);
+    $("#SubmitFormModel_Website").val(selRowInfo[6]);
+    $("#submit").val("Edit");
+});
+
+
+});
+</script>

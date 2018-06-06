@@ -1,0 +1,173 @@
+﻿@using X.PagedList.Mvc;
+@model SIBF.UserManagement.Models.CompanyModel
+
+@{
+    ViewBag.Title = "Create Company";
+}
+
+<div class="container">
+    <div class="row">
+        <h2>Register Company</h2>
+        @if (ViewBag.SuccessMsg != null)
+        {
+            <p style="color:forestgreen">Company created successfully!</p>
+        }
+        <hr />
+        <div class="col-lg-6">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-horizontal">
+
+                    <hr />
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.CompanyShortName, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.FormSubmit.CompanyShortName, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.FormSubmit.CompanyShortName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.CompanyFullName, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.FormSubmit.CompanyFullName, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.FormSubmit.CompanyFullName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.CompanyLocation, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.FormSubmit.CompanyLocation, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.FormSubmit.CompanyLocation, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-4 col-md-8">
+                            <input type="submit" value="Create" class="btn btn-default" />
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-lg-6">
+            <p class="alert-info" id="deleteMsg"></p>
+            @using (Html.BeginForm())
+            {
+
+                <table class="table table-responsive table-bordered table-striped" style="background-color:#fff;">
+                    <tr>
+                        <th style="text-align: center;">
+                            Company Short Name
+                        </th>
+                        <th style="text-align: center;">
+                            Company Full Name
+                        </th>
+                        <th style="text-align: center;">
+                            Location
+                        </th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+
+                    @foreach (var item in Model.DisplayCompany.Company)
+                    {
+                        string allInfo = item.CompanyID + '^' + item.CompanyShortName + '^' + item.CompanyFullName + '^' + item.CompanyLocation;
+                        @Html.HiddenFor(modelItem => allInfo, new { id = "allInfo_" + @item.CompanyID })
+                        <tr id="row_@item.CompanyID">
+                            <td id="col1_@item.CompanyID">
+                                @Html.DisplayFor(modelItem => item.CompanyShortName)
+                            </td>
+                            <td id="col2_@item.CompanyID">
+                                @Html.DisplayFor(modelItem => item.CompanyFullName)
+                            </td>
+                            <td id="col3_@item.CompanyID">
+                                @Html.DisplayFor(modelItem => item.CompanyLocation)
+                            </td>
+                            <td>
+                                <a href="#" class="editElementByIdFromTable" id="edit_@item.CompanyID">
+                                    <img src="@Url.Content("~/Content/Images/edit.ico")" , alt="Delete" />
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="#" class="deleteElement" id="@item.CompanyID">
+                                    <img src="@Url.Content("~/Content/Images/delete.ico")" , alt="Delete" />
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </table>
+                <br />
+
+            }
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script>
+    $(document).ready(function () {
+        $("#FormSubmit_RowID").val('0');
+        $(".deleteElement").click(function () {
+            selRow = this.id;
+            seletedElementData=$.trim($("#col2_"+selRow).html());
+            resultClick = confirm("You are sure you want to delete : " +seletedElementData);
+            if (resultClick == true) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DeleteCompany")',
+                    dataType: 'json',
+                    data: {
+                        id: selRow
+                    },
+                    success: function (data) {
+                        if (data == true) {
+                            setRowSeleted = "#row_" + selRow;
+                            $(setRowSeleted).remove();
+                            $("#deleteMsg").html('Deleted successfully');
+                        }
+                        else {
+                            $("#deleteMsg").html('Delete is not possiable some error try again!');
+                        }
+                    },
+                    error: function (ex) {
+                        var r = jQuery.toString(response.responseText);
+                        alert("Message: " + r.Message);
+                        alert("StackTrace: " + r.StackTrace);
+                        alert("ExceptionType: " + r.ExceptionType);
+                    }
+                });
+            }
+            else {
+                return false;
+            }
+        });
+
+
+        $(".editElementByIdFromTable").click(function () {
+            selRow = this.id;
+            var selRow = selRow.split("_");
+            seletedName = $.trim($("#col1_" + selRow[1]).html());
+            seletedData = $.trim($("#allInfo_" + selRow[1]).val());
+            var selRowInfo = seletedData.split("^");
+            resultClick = confirm("You are sure you want to edit : " + selRowInfo[0]);
+            if (resultClick == true)
+            {
+                $("#FormSubmit_RowID").val(selRow[1]);
+                $("#FormSubmit_ProductID").prepend("<option value='" + selRowInfo[1] + "'>" + selRowInfo[0] + "</option>").val(selRowInfo[1]);
+                $("#FormSubmit_UserName").prepend("<option value='" + selRowInfo[3] + "'>" + selRowInfo[3] + "</option>").val(selRowInfo[3]);
+                $("#FormSubmit_Quantity").val(selRowInfo[2]);
+                $("#submit").val("Edit");
+                return false;
+            }
+            return false;
+        });
+
+});
+</script>

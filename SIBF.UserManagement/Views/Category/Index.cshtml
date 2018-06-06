@@ -1,0 +1,181 @@
+﻿@model SIBF.UserManagement.Models.CategorysModels
+@{
+    ViewBag.Title = "Categorys";
+}
+
+<h2>Create New Category</h2>
+<hr />
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6">
+            @using (Html.BeginForm())
+            {
+                <div class="form-horizontal">
+
+                  
+                    @if (ViewBag.SuccessMsg != null)
+                    {
+                        <p class="text-info">@ViewBag.SuccessMsg</p>
+                    }
+                    else if (ViewBag.Failuremessage != null)
+                    {
+                        <p class="text-danger">@ViewBag.Failuremessage</p>
+                    }
+
+
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubmitFormModel.CategoryName, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-6">
+                            @Html.EditorFor(model => model.SubmitFormModel.CategoryName, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.SubmitFormModel.CategoryName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubmitFormModel.CategoryDescription, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-6">
+                            @Html.EditorFor(model => model.SubmitFormModel.CategoryDescription, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.SubmitFormModel.CategoryDescription, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            @Html.HiddenFor(model => model.SubmitFormModel.CategoryID)
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-4 col-md-10">
+                            <input type="submit" value="Submit" class="btn btn-default" id="submit" />
+                        </div>
+                    </div>
+                </div>
+
+            }
+        </div>
+        <div class="col-lg-6">
+            <p class="alert-info" id="deleteMsg"></p>
+            @using (Html.BeginForm())
+            {
+
+                <table class="table table-responsive table-bordered table-striped" style="background-color:#fff;">
+                    <tr>
+                        <th style="text-align: center;">
+                            Name
+                        </th>
+                        <th style="text-align: center;">
+                            Description
+                        </th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+
+                    @foreach (var item in Model.ListDataModel.Categorys)
+                    {
+
+                        <tr id="row_@item.CategoryId">
+                            <td id="itemname_@item.CategoryId">
+                                @Html.DisplayFor(modelItem => item.CategoryName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CategoryDescription)
+                            </td>
+                            <td>
+                                <a href="#" class="editElementById" id="edit_@item.CategoryId">
+                                    <img src="@Url.Content("~/Content/Images/edit.ico")" , alt="Delete" />
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="#" class="deleteElement" id="@item.CategoryId">
+                                    <img src="@Url.Content("~/Content/Images/delete.ico")" , alt="Delete" />
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </table>
+                <br />
+
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#SubmitFormModel_CategoryID").val('0');
+        $(".deleteElement").click(function () {
+            selRow = this.id;
+            seletedElementData = $.trim($("#itemname_" + selRow).html());
+            resultClick = confirm("You are sure you want to delete : " + seletedElementData);
+            if (resultClick == true) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DeleteElement")',
+                    dataType: 'json',
+                    data: {
+                        id: selRow,
+                        tablename: 'ItemCategory',
+                        colName: 'item_category_id'
+                    },
+                    success: function (data) {
+                        if (data == true) {
+                            setRowSeleted = "#row_" + selRow;
+                            $(setRowSeleted).remove();
+                            $("#deleteMsg").html('Delete successfully');
+                        }
+                        else {
+                            $("#deleteMsg").html('Delete is not possiable as it dependent on sub categorys');
+                        }
+                    },
+                    error: function (ex) {
+                        var r = jQuery.toString(response.responseText);
+                        alert("Message: " + r.Message);
+                        alert("StackTrace: " + r.StackTrace);
+                        alert("ExceptionType: " + r.ExceptionType);
+                    }
+                });
+            }
+            else {
+                return false;
+            }
+        });
+
+        $(".editElementById").click(function () {
+            selRow = this.id;
+            var selRow = selRow.split("_");
+            seletedElementData = $.trim($("#itemname_" + selRow[1]).html());
+            resultClick = confirm("You are sure you want to edit : " + seletedElementData);
+            if (resultClick == true) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("EditElement")',
+                    dataType: 'json',
+                    data: {
+                        id: selRow[1]
+                    },
+                    success: function (data) {
+                        var items = '';
+                        $.each(data, function (i, item) {
+                            $("#SubmitFormModel_CategoryName").val(item.CategoryName);
+                            $("#SubmitFormModel_CategoryDescription").val(item.CategoryDescription);
+                            $("#SubmitFormModel_CategoryID").val(item.CategoryId);
+                            $("#submit").val("Edit");
+                        })
+                    },
+                    error: function (ex) {
+                        var r = jQuery.toString(response.responseText);
+                        alert("Message: " + r.Message);
+                        alert("StackTrace: " + r.StackTrace);
+                        alert("ExceptionType: " + r.ExceptionType);
+                    }
+                });
+            }
+            else {
+                return false;
+            }
+        });
+    });
+</script>

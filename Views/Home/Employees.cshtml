@@ -1,0 +1,117 @@
+﻿@using X.PagedList.Mvc;
+@model SIBF.UserManagement.Models.MembershipUserModel
+
+@{
+    ViewBag.Title = "List of users";
+}
+
+<h2>List of Users</h2>
+@using (Html.BeginForm())
+{
+
+    <table class="table table-responsive table-bordered table-striped" style="background-color:#fff;">
+        <tr>
+            <th style="text-align: center; width: 12%">
+                @Html.ActionLink("Username", "Employees", new { SortBy = "Username", Ascending = (Model.SortAscending ? false : true) })
+            </th>
+            <th style="text-align: center; width: 12%">
+                @Html.ActionLink("Email Address", "Employees", new { SortBy = "Email", Ascending = (Model.SortAscending ? false : true) })
+            </th>
+            <th style="text-align: center; width: 12%">
+                @Html.ActionLink("Creation On", "Employees", new { SortBy = "CreationDate", Ascending = (Model.SortAscending ? false : true) })
+            </th>
+            <!-- <th>
+                 Last Activity On
+             </th>
+             <th>
+                 Last Logged On
+             </th>
+             <th>
+                 Last Password Changed On
+             </th> -->
+            <th>
+                Comment
+            </th>
+            <th style="text-align: center; width: 12%">
+                @Html.ActionLink("Created By", "Employees", new { SortBy = "CreatedBy", Ascending = (Model.SortAscending ? false : true) })
+            </th>
+            <th>
+                Modified By
+            </th>
+            <th>View</th>
+            <th>Edit</th>
+            <th style="text-align: center; width: 12%">
+                @Html.ActionLink("Lock", "Employees", new { SortBy = "IsLockedout", Ascending = (Model.SortAscending ? false : true) })
+            </th>
+            <th>Delete</th>
+        </tr>
+
+        @foreach (var item in Model.UsersPage)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Username)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreationDate)
+                </td>
+                <!-- <td>
+                   Html.DisplayFor(modelItem => item.LastActivityDate)
+                </td>
+                <td>
+                    Html.DisplayFor(modelItem => item.LastLoginDate)
+                </td>
+                <td>
+                    Html.DisplayFor(modelItem => item.LastPasswordChangedDate)
+                </td> -->
+                <td>
+                    @Html.DisplayFor(modelItem => item.Comment)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedBy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ModifiedBy)
+                </td>
+                <td>
+                    <a href="@Url.Action("Details", new { Username = item.Username })">
+                        <img src="@Url.Content("~/Content/Images/details.ico")" , alt="Edit" />
+                    </a>
+                </td>
+                <td>
+                    <a href="@Url.Action("Edit", new { Username = item.Username })">
+                        <img src="@Url.Content("~/Content/Images/edit.ico")" , alt="Edit" />
+                    </a>
+                </td>
+                <td>
+                    @if (item.IsLockedout)
+                    {
+                        <a href="@Url.Action("LockUnlock", new { Username = item.Username, IsLock=false })">
+                            <img src="@Url.Content("~/Content/Images/unlock.ico")" , alt="Edit" />
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("LockUnlock", new { Username = item.Username, IsLock=true })">
+                            <img src="@Url.Content("~/Content/Images/lock.ico")" , alt="Edit" />
+                        </a>
+                    }
+                </td>
+                <td>
+                    <a href="@Url.Action("Delete", new { Username = item.Username })">
+                        <img src="@Url.Content("~/Content/Images/delete.ico")" , alt="Edit" />
+                    </a>
+                </td>
+            </tr>
+        }
+    </table>
+    <br />
+    <div id='Paging' style="text-align: center">
+        Page @(Model.UsersPage.PageCount < Model.UsersPage.PageNumber ? 0 : Model.UsersPage.PageNumber)
+        of @Model.UsersPage.PageCount
+        @Html.PagedListPager(Model.UsersPage, page => Url.Action("Employees", new { Page = page }))
+    </div>
+}

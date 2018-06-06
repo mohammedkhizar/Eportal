@@ -1,0 +1,248 @@
+﻿@model SIBF.UserManagement.Models.CreateProductModel
+
+@{
+    ViewBag.Title = "Create Product";
+}
+
+<style>
+    tbody {
+    display: block;
+    height: 500px;
+    overflow: auto;
+}
+</style>
+<div class="container">
+    <div class="row">
+        <h2>Create Product</h2>
+        @if (ViewBag.SuccessMsg != null)
+        {
+            <p class="text-info">@ViewBag.SuccessMsg</p>
+        }
+        else if (ViewBag.Failuremessage != null)
+        {
+            <p class="text-danger">@ViewBag.Failuremessage</p>
+        }
+        <hr />
+        <div class="col-lg-4">
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-horizontal">
+
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.CategoryId, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.DropDownListFor(model => model.FormSubmit.CategoryId, new SelectList(ViewBag.CategoryList, "CategoryId", "CategoryName", 1), "Please Select Category", new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.SubCategoryId, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.DropDownListFor(model => model.FormSubmit.SubCategoryId, new SelectList(ViewBag.SubCategoryList, "SubCategoryId", "SubCategoryName", 1), "Please Select Sub-Category", new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.SupplierID, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.DropDownListFor(model => model.FormSubmit.SupplierID, new SelectList(ViewBag.SupplierList, "SupplierID", "SupplierName"), new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.ProductName, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.FormSubmit.ProductName, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.FormSubmit.ProductName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.ProductDesc, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.FormSubmit.ProductDesc, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.FormSubmit.ProductDesc, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.ProductType, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.DropDownListFor(model => model.FormSubmit.ProductType, Model.DisplayData.ProductType,new { onchange = "this.form.submit();", @class = "form-control" })
+                          
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            @Html.HiddenFor(model => model.FormSubmit.ProductId)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-4 col-md-8">
+                            <input type="submit" id="submit" value="Create" class="btn btn-default" />
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-lg-8">
+            <p class="alert-info" id="deleteMsg"></p>
+            @using (Html.BeginForm())
+            {
+
+                <table class="table table-responsive table-bordered table-striped" style="background-color:#fff;">
+                    <tr>
+                        <th style="text-align: center;">
+                            Category
+                        </th>
+                        <th style="text-align: center;">
+                            Sub Category
+                        </th>
+                        <th style="text-align: center;">Supplier</th>
+                        <th style="text-align: center;">
+                            Product Name
+                        </th>
+                        <th style="text-align: center;">
+                            Product Description
+                        </th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+
+                    @foreach (var item in Model.DisplayData.ProductDataList)
+                    {
+                        string allInfo = item.CategoryName+'^'+item.SubCategoryName+'^'+item.SubCategoryID+'^'+
+                                         item.SupplierID + '^' + item.SupplierName + '^' +
+                                         item.ProductName + '^' + item.ProductDesc + '^' + item.CategoryID;
+                        @Html.HiddenFor(modelItem => allInfo, new { id = "allInfo_" + @item.ProductID })
+
+                        <tr id="row_@item.ProductID">
+                            <td id="col1_@item.ProductID">
+                                @Html.DisplayFor(modelItem => item.CategoryName)
+                            </td>
+                            <td id="col5_@item.ProductID">
+                                @Html.DisplayFor(modelItem => item.SubCategoryName)
+                            </td>
+                            <td id="col2_@item.ProductID">
+                                @Html.DisplayFor(modelItem => item.SupplierName)
+                            </td>
+                            <td id="col3_@item.ProductID">
+                                @Html.DisplayFor(modelItem => item.ProductName)
+                            </td>
+                            <td id="col4_@item.ProductID">
+                                @Html.DisplayFor(modelItem => item.ProductDesc)
+                            </td>
+                            <td>
+                                <a href="#" class="editElementByIdFromTable" id="edit_@item.ProductID">
+                                    <img src="@Url.Content("~/Content/Images/edit.ico")" , alt="Edit" />
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="#" class="deleteElement" id="@item.ProductID">
+                                    <img src="@Url.Content("~/Content/Images/delete.ico")" , alt="Delete" />
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </table>
+                <br />
+
+            }
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#FormSubmit_ProductId").val('0');
+        $(".deleteElement").click(function () {
+            selRow = this.id;
+            seletedElementData = $.trim($("#col3_" + selRow).html());
+            resultClick = confirm("You are sure you want to delete : " + seletedElementData);
+            if (resultClick == true) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DeleteProduct")',
+                    dataType: 'json',
+                    data: {
+                        id: selRow
+                    },
+                    success: function (data) {
+                        if (data == true) {
+                            setRowSeleted = "#row_" + selRow;
+                            $(setRowSeleted).remove();
+                            $("#deleteMsg").html('Delete successfully');
+                        }
+                        else {
+                            $("#deleteMsg").html('Delete is not possiable as it dependent products');
+                        }
+                    },
+                    error: function (ex) {
+                        var r = jQuery.toString(response.responseText);
+                        alert("Message: " + r.Message);
+                        alert("StackTrace: " + r.StackTrace);
+                        alert("ExceptionType: " + r.ExceptionType);
+                    }
+                });
+            }
+            else {
+                return false;
+            }
+        });
+
+        $(".editElementByIdFromTable").click(function () {
+            selRow = this.id;
+            var selRow = selRow.split("_"); 
+            seletedName = $.trim($("#col3_" + selRow[1]).html());
+            resultClick = confirm("You are sure you want to edit : " + seletedName);
+
+            if (resultClick == true) {
+                seletedData = $.trim($("#allInfo_" + selRow[1]).val());
+                var selRowInfo = seletedData.split("^");
+                $("#FormSubmit_CategoryId").prepend("<option value='" + selRowInfo[0] + "</option>").val(selRowInfo[7]);
+                $("#FormSubmit_SubCategoryId").prepend("<option value='" + selRowInfo[2] + "</option>").val(selRowInfo[2]);
+                $("#FormSubmit_SupplierID").prepend("<option value='" + selRowInfo[3] + "'>" + selRowInfo[4] + "</option>").val(selRowInfo[3]);
+                $("#FormSubmit_ProductName").val(selRowInfo[5]);
+                $("#FormSubmit_ProductDesc").val(selRowInfo[6]);
+                $("#FormSubmit_ProductId").val(selRow[1]);
+                $("#submit").val("Edit");
+            }
+            else { return false;}
+        });
+
+        $("#FormSubmit_CategoryId").change(function () {
+            var id = this.value;
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetSubCategoryByID")',
+                dataType: 'json',
+                data: {
+                    id: id
+                },
+                success: function (data) {
+                    $('select#FormSubmit_SubCategoryId').empty();
+                    $.each(data, function (key, item) {
+                        var catdetails = item.SubCategoryName;
+                        //var catdetails =catdetails.substring(0,50);
+                        $('#FormSubmit_SubCategoryId').append(
+                        $('<option></option>').val(item.SubCategoryId).html(catdetails));
+                    });
+                   // GetSubCateogryDataByID
+                    // console.wrtie(data);
+                    // console.log('tables: ' + JSON.stringify(data));
+
+                },
+                error: function (ex) {
+                    var r = jQuery.toString(response.responseText);
+                    alert("Message: " + r.Message);
+                    alert("StackTrace: " + r.StackTrace);
+                    alert("ExceptionType: " + r.ExceptionType);
+                }
+            });
+        });
+    });
+</script>

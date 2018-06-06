@@ -1,0 +1,127 @@
+﻿@model SIBF.UserManagement.Models.RequirementModelsList
+@{
+    ViewBag.Title = "User Requirement List";
+    // Layout = "~/Views/Account/RequirementGeneralForm.cshtml";
+}
+<h2>User Requirement List</h2>
+<span id="deleteMsg"></span>
+<table class="table table-responsive table-bordered table-striped" style="background-color:#fff;">
+    <tr>
+        <th class="thalign">
+            Product Category
+        </th>
+        <th class="thalign">
+            Product Sub-Category
+        </th>
+        <th class="thalign">
+            Product Name
+        </th>
+        <th class="thalign">
+            User Name
+        </th>
+        <th class="thalign">
+            Available Quantity
+        </th>
+        <th class="thalign">
+            Requested Quantity
+        </th>
+        <th class="thalign">
+            Assigned Quantity
+        </th>
+    </tr>
+    @foreach (var item in Model.RequirementList)
+    {
+        //var prodlist = @item.ProductName.Trim() + '^' + @item.UserName + '^' + @item.ProductID;
+        var rowid = "row_"+@item.RowID; var catname = "cat_" + @item.RowID; var subcatname = "subcatname_" + @item.RowID; var prodname = "prodname_" + @item.RowID;
+        var uname = "uname_" + @item.RowID; var aprodqty = "aprodqty_" + @item.RowID; var assprodqty = "assprodqty_" + @item.RowID;
+        var action = "action_" + @item.RowID;
+
+        <tr id="@rowid">
+            <td id="@catname"> @item.CategoryName</td>
+            <td id="@subcatname"> @item.SubCategoryName</td>
+            <td id="@prodname"> @item.ProductName</td>
+            <td id="@uname"> @item.UserName</td>
+            <td id="@aprodqty"> @item.AvailableProductQuantity</td>
+            <td id="@assprodqty"> @item.AssignedProductQuantity</td>
+            <td id="@action" class="@item.ProductID">
+                @if (@item.AvailableProductQuantity != 0)
+                {
+                    @*<select id="@item.RowID" name="@item.RowID" class="form-control assignedlist">
+                        @for (int i = 0; i < @item.AvailableProductQuantity; i++)
+                        {
+                            int j = i + 1;
+                            <option value="@j">@j</option>
+                        }
+                    </select>*@
+                @Html.ActionLink("Assign Stock", "AssignStockRequirment", new { RequirementID = @item.RowID });
+                }
+                else if (@item.AvailableProductQuantity == 0)
+                {
+                    <input type="text" id="@item.RowID" name="@item.RowID" class="form-control assignedlist" placeholder="Out of Stock or Reason" />
+                }
+                else
+                {
+                    <input type="text" id="@item.RowID" name="@item.RowID" class="form-control assignedlist" placeholder="Reason" />
+                }
+            </td>
+        </tr>
+    }
+</table>
+
+<script>
+    $(document).ready(function () {
+        //alert($("#cat_1").text());
+        $(".assignedlist").change(function () {
+            var selID = this.id; var Quantity = 0; var Reason = '';
+            intRegex = /[0-9 -()+]+$/;
+            var reasonOrQuantity = $("#" + selID).val(); 
+            if (intRegex.test(reasonOrQuantity) === true) {
+                Quantity = reasonOrQuantity; alert("Quantity:"+ Quantity);
+            }
+            else { Reason = $("#"+selID).val(); alert("Reason" + Reason); }
+            var trid = $(this).closest('tr').attr('id');
+            list = trid.split("_");
+            selectedRow = list[1];
+            var ProductName = $("#prodname_"+selectedRow).text().trim();
+            var UserName = $("#uname_" + selectedRow).text().trim();
+            //var ProductID = $("#prodname_" + selectedRow).text;
+            var ProductID = $('#action_' + selectedRow).attr('class');
+            //alert(ProductName + UserName + ProductID); return false;
+            //if(reasonOrQuantity != 'Reason')
+            //resultClick = confirm("You are sure you want assigned product to : " + ProductName);
+            //if (resultClick == true) {
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("UpdatedProductAssigned")',
+                dataType: 'json',
+                data: {
+                    //UpdatedProductAssigned(string UserName, string ProductName, int ProductID, int SelRowID, int Quantity, string Reason)
+                    ProductName: ProductName,
+                    UserName: UserName,
+                    ProductID: ProductID,
+                    SelRowID: selID,
+                    Quantity: Quantity,
+                    Reason: Reason
+                },
+                success: function (data) {
+                    
+                    if (data === true) {
+                        $("#row_" + selectedRow).remove();
+                        $("#deleteMsg").html('Product assigned to user successfully');
+                    }
+                    else {
+                        $("#deleteMsg").html('Unable to assigned product to user, Please try again!');
+                    }
+                },
+                error: function (ex) {
+                    var r = jQuery.toString(response.responseText);
+                    alert("Message: " + r.Message);
+                    alert("StackTrace: " + r.StackTrace);
+                    alert("ExceptionType: " + r.ExceptionType);
+                }
+            });
+
+        });
+    });
+</script>

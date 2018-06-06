@@ -1,0 +1,140 @@
+﻿@using X.PagedList.Mvc;
+@model SIBF.UserManagement.Models.DepartmentModel
+
+@{
+    ViewBag.Title = "Create Department";
+}
+<div class="container">
+    <div class="row">
+        <h2>Register Department</h2>
+        @if (ViewBag.SuccessMsg != null)
+        {
+            <p style="color:forestgreen">Department created successfully!</p>
+        }
+        <hr />
+        <div class="col-lg-6">
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-horizontal">
+                    <hr />
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.SelectedCompanyID, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.DropDownListFor(model => model.FormSubmit.SelectedCompanyID, new SelectList(ViewBag.Company, "CompanyID", "CompanyFullName", 1), "Please Select Category", new { @class = "form-control" })
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.DepartmentName, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.FormSubmit.DepartmentName, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.FormSubmit.DepartmentName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.DepartmentDirNme, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.FormSubmit.DepartmentDirNme, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.FormSubmit.DepartmentDirNme, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.DepartmentFloorno, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.FormSubmit.DepartmentFloorno, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.FormSubmit.DepartmentFloorno, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FormSubmit.DepartmentRoomno, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.FormSubmit.DepartmentRoomno, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.FormSubmit.DepartmentRoomno, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-4 col-md-8">
+                            <input type="submit" value="Create" class="btn btn-default" />
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-lg-6">
+            <p class="alert-info" id="deleteMsg"></p>
+            @using (Html.BeginForm())
+            {
+
+                <table class="table table-responsive table-bordered table-striped" style="background-color:#fff;">
+                    <tr>
+                        <th style="text-align: center;">
+                            Company Name
+                        </th>
+                        <th style="text-align: center;">
+                            Department Name
+                        </th>
+                        <th style="text-align: center;">
+                            Directory Name
+                        </th>
+                        <th style="text-align: center;">
+                            Floor
+                        </th>
+                        <th style="text-align: center;">
+                            Room
+                        </th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+
+                    @foreach (var item in Model.DisplayDepartment.DepartmentList)
+                    {
+                        string allInfo = item.DepartmentID + '^' + item.DepartmentName + '^' + item.DepartmentDirNme + '^' + item.DepartmentFloorno + '^' + item.DepartmentRoomno + '^' + item.CompanyID + '^' + item.CompanyFullName;
+                        @Html.HiddenFor(modelItem => allInfo, new { id = "allInfo_" + @item.CompanyID })
+                        <tr id="row_@item.DepartmentID">
+                            <td id="col1_@item.DepartmentID">
+                                @Html.DisplayFor(modelItem => item.CompanyFullName)
+                            </td>
+                            <td id="col2_@item.DepartmentID">
+                                @Html.DisplayFor(modelItem => item.DepartmentName)
+                            </td>
+                            <td id="col3_@item.DepartmentID">
+                                @Html.DisplayFor(modelItem => item.DepartmentDirNme)
+                            </td>
+                            <td id="col2_@item.DepartmentID">
+                                @Html.DisplayFor(modelItem => item.DepartmentFloorno)
+                            </td>
+                            <td id="col3_@item.DepartmentID">
+                                @Html.DisplayFor(modelItem => item.DepartmentRoomno)
+                            </td>
+                            <td>
+                                <a href="#" class="editElementByIdFromTable" id="edit_@item.DepartmentID">
+                                    <img src="@Url.Content("~/Content/Images/edit.ico")" , alt="Delete" />
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="#" class="deleteElement" id="@item.DepartmentID">
+                                    <img src="@Url.Content("~/Content/Images/delete.ico")" , alt="Delete" />
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </table>
+                <br />
+
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

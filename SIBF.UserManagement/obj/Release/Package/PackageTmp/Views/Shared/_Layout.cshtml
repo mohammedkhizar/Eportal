@@ -1,0 +1,188 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - SIBF User Management</title>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    <style type="text/css">
+        .footer {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            padding: 1rem;
+            background-color: #f47936;
+            text-align: center;
+            color: #fff;
+        }
+
+        .header .navbar-brand {
+            display: flex;
+            align-items: center;
+            width: auto;
+        }
+
+            .header .navbar-brand > img {
+                padding: 10px 14px;
+            }
+
+        .full-width-div {
+            position: absolute;
+            width: 100%;
+            left: 0;
+            top: 0;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .nav-tabs .dropdown-menu, .nav-pills .dropdown-menu, .navbar .dropdown-menu {
+            margin-top: 0;
+        }
+
+        .navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
+            color: #ffffff;
+            background-color: #f54514;
+            text-decoration: none;
+        }
+
+        .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
+            color: #ffffff;
+            text-decoration: none;
+            background-color: #f54514;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header full-width-div">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#"><img style="width: 200px;" src="~/Content/Images/SBA logo.png" alt="Sharjah Book Authority"> </a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav pull-right">
+                        @if (Context.User.Identity.IsAuthenticated)
+                        {
+                            <li class="headusername">Welcome : @User.Identity.Name</li>
+                            <li>@Html.ActionLink("Log Out", "LogOff", "Account")</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+
+    <br>
+    <br><br>
+    <br>
+    <br>
+    <br>
+    @if (Context.User.Identity.IsAuthenticated)
+    {
+        var controller = HttpContext.Current.Request.RequestContext.RouteData.Values["Controller"].ToString();
+        string page = HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString();
+        string[] pagesList = { "Employees", "RequirementGeneralForm", "AssignStockRequirment" }; //Array.IndexOf(pagesList, page) "UserRequirments",
+        bool pagearray = Convert.ToBoolean(pagesList.Contains(page));
+        if (page != "Index" || controller != "Home")
+        {
+            if (pagearray == false)
+            {
+                <div class="container" style="padding:15px;">
+                    <div class="navbar navbar-default">
+                        <div class="navbar-inner">
+
+                            <ul class="nav navbar-nav">
+                                <li>@Html.ActionLink("Home", "Index", "Home")</li>
+
+                                <li>@Html.ActionLink("User", "RegisterEmployee", "Account") </li>
+
+
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Product<span class="caret"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li>@Html.ActionLink("Category", "Index", "Category") </li>
+                                        <li>@Html.ActionLink("Sub-Category", "SubCategory", "Category") </li>
+                                        <li>@Html.ActionLink("Product", "ProductEntry", "ProductEntry")</li>
+                                    </ul>
+                                </li>
+
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Stock<span class="caret"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li>@Html.ActionLink("Add Stock", "StockEntry", "ProductEntry") </li>
+                                        <li>@Html.ActionLink("Assign Stock", "AssignProduct", "ProductEntry") </li>
+                                        <li>@Html.ActionLink("Avaliable Stock", "AvaliableStock", "ProductEntry") </li>
+                                        <li>@Html.ActionLink("Requirements List", "UserRequirments", "Requirement")</li>
+                                        <li>@Html.ActionLink("Return", "ReturnStockRequirment", "Requirement")</li>
+                                    </ul>
+                                </li>
+
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Organization<span class="caret"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li>@Html.ActionLink("Add Company", "Company", "Account") </li>
+
+                                        <li>@Html.ActionLink("Add Department", "Department", "Account") </li>
+                                    </ul>
+                                </li>
+
+                                <li>@Html.ActionLink("WhereHouse", "Index", "ProductEntry") </li>
+
+                                <li>@Html.ActionLink("Supplier", "SupplierEntry", "ProductEntry") </li>
+
+
+
+
+                            </ul>
+                        </div>
+                    </div>
+                    <hr />
+                </div>
+            }
+            else //(page == "Employees" || page == "RequirementGeneralForm")
+            {
+                <div class="container" style="padding:15px;">
+                    <div class="navbar navbar-default">
+                        <div class="navbar-inner">
+
+                            <ul class="nav navbar-nav">
+                                <li>@Html.ActionLink("Home", "Index", "Home") </li>
+                                <li>@Html.ActionLink("Employee List", "Employees", "Home")</li>
+                                <li>@Html.ActionLink("Fill Requirements", "RequirementGeneralForm", "Account")</li>
+                             </ul>
+                        </div>
+                    </div>
+                    <hr />
+                </div>
+            }
+        }
+    }
+    <div class="container body-content">
+        @RenderBody()
+
+        <footer>
+            <!-- <p>&copy; @DateTime.Now.Year - SIBF User Management</p>
+             <div class="footer"><p>&copy; @DateTime.Now.Year - All Copyrights Reserved to Sharjah Book Authority - IT Team</p></div>
+             -->
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

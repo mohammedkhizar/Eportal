@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - SIBF User Management</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+</head>
+<style type="text/css">
+    .footer {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        padding: 1rem;
+        background-color: #f47936;
+        text-align: center;
+        color: #fff;
+    }
+
+    .header .navbar-brand {
+        display: flex;
+        align-items: center;
+        width: auto;
+    }
+
+        .header .navbar-brand > img {
+            padding: 10px 14px;
+        }
+
+    .full-width-div {
+        position: absolute;
+        width: 100%;
+        left: 0;
+        top: 0;
+    }
+</style>
+<body>
+    <div class="header full-width-div">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#"><img style="width: 200px;" src="~/Content/Images/SBA logo.png" alt="Sharjah Book Authority"> </a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav pull-right">
+                        @if (Context.User.Identity.IsAuthenticated)
+                        {
+                            <li class="headusername">Welcome : @User.Identity.Name</li>
+                            <li>@Html.ActionLink("LogOff", "LogOff", "Account")</li>
+                        }
+                </div>
+            </div>
+        </nav>
+    </div>
+    <br>
+    <br><br>
+    <br>
+    <br>
+    <br>
+   
+            
+                <div class="container" style="padding:15px;">
+                    <p>
+                        @Html.ActionLink("Home", "Index", "Home")
+                        &nbsp;| &nbsp;
+                        @Html.ActionLink("Fill Requirements", "RequirementGeneralForm", "Account")
+                    </p>
+                    <hr />
+                </div>
+            
+    <div class="container body-content">
+        @RenderBody()
+
+        <footer>
+            <!-- <p>&copy; @DateTime.Now.Year - SIBF User Management</p>
+             <div class="footer"><p>&copy; @DateTime.Now.Year - All Copyrights Reserved to Sharjah Book Authority - IT Team</p></div>
+             -->
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,222 @@
+﻿@model SIBF.UserManagement.Models.RequirementModelsList
+
+@{
+    ViewBag.Title = "AssignStockRequirment";
+    //Layout = "~/Views/Requirement/Index.cshtml";
+}
+
+<h2>Assign Stock By Requirment</h2>
+@if (ViewBag.SuccessMsg != null)
+{
+    <p class="text-info">@ViewBag.SuccessMsg</p>
+}
+else
+{
+<div class="col-lg-6">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        //@Model.RequirementList[0].CategoryName;
+
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="form-group">
+                @Html.LabelFor(model => @Model.RequirementList[0].UserName, "Requested User", htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-12">
+                    @Html.EditorFor(model => @Model.RequirementList[0].UserName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => @Model.RequirementList[0].CategoryName, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-12">
+                    @Html.EditorFor(model => @Model.RequirementList[0].CategoryName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => @Model.RequirementList[0].SubCategoryName, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-12">
+                    @Html.EditorFor(model => @Model.RequirementList[0].SubCategoryName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => @Model.RequirementList[0].ProductName, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-12">
+                    @Html.EditorFor(model => @Model.RequirementList[0].ProductName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => @Model.RequirementList[0].RequestedProductQuantity, "Requested Quantity", htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-12">
+                    @Html.EditorFor(model => @Model.RequirementList[0].RequestedProductQuantity, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @value = "0" } })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => @Model.RequirementList[0].AvailableProductQuantity, "Available Quantity", htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-12">
+                    @Html.EditorFor(model => @Model.RequirementList[0].AvailableProductQuantity, new { htmlAttributes = new { @class = "form-control", @id = "AvaliableQuantityValue", @readonly = "readonly", @value = "0" } })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => @Model.RequirementList[0].AvailableProductQuantity, "Available Quantity Details", htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8 AvaliableQuantityDeatils" id="AvaliableQuantityDeatilsByID">
+                    <table class="table table-responsive table-bordered table-striped">
+                        <tbody>
+                            <tr><th>#</th><th>Quanity</th><th>Assigned Quanity</th><th>Manufacture Date</th><th>Expire Date</th></tr>
+                        </tbody>
+                        <tbody id="appedproductlist"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => @Model.RequirementList[0].AssignedProductQuantity, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @Html.HiddenFor(model => @Model.RequirementList[0].RowID)
+                    @Html.HiddenFor(model => @Model.RequirementList[0].ProductID)
+                    @Html.HiddenFor(model => @Model.RequirementList[0].AssignedQuanity, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.EditorFor(model => @Model.RequirementList[0].AssignedProductQuantity, new { htmlAttributes = new { @class = "form-control", @id = "FormSubmit_Quantity" } })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-4 col-md-8">
+                    <input type="submit" id="submit" value="Assign Quantity" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+
+    }
+</div>
+}
+<script>
+    $(document).ready(function () {
+        $("#FormSubmit_RowID").val('0');
+  
+        // $("#FormSubmit_ProductID").change(function () {
+        var Quantity = 0; //alert($("#RequirementList_0__ProductID").val());
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetAvaliableQuantity", "ProductEntry")',
+                dataType: 'json',
+                data: { id: $("#RequirementList_0__ProductID").val() },
+                success: function (data) {
+                   //console.log('tables: ' + JSON.stringify(data)); return false;
+                    $('select#AvaliableQuantityDeatilsByID').empty();
+
+                    $.each(data, function (key, item) {
+                       mdate = setDate(item.ManufactureDate);
+                       edate = setDate(item.ExpiryDate);
+                       Quantity = item.Quantity + Quantity;
+                       setQid = "Quanity_" + item.StockID;
+                       setAssQid = "AssignedQty_" + item.StockID;
+                       row = $("<tr></tr>");
+                       col1 = $("<td><input type='checkbox' class='clickaqnty' id='" + item.StockID + "' value='" + item.StockID + "'></td>");
+                       col2 = $("<td id='" + setQid + "'>" + item.Quantity + "</td>");
+                       col3 = $("<td id='" + setAssQid + "'>0</td>");
+                       col4 = $("<td>" + mdate + "</td>");
+                       col5 = $("<td>" + edate + "</td>");
+                       row.append(col1, col2, col3, col4, col5).prependTo("#appedproductlist");
+
+                    });
+
+                    $("#AvaliableQuantityValue").val(Quantity);
+                },
+                error: function (ex) {
+                    var r = jQuery.toString(response.responseText);
+                    alert("Message: " + r.Message);
+                    alert("StackTrace: " + r.StackTrace);
+                    alert("ExceptionType: " + r.ExceptionType);
+                }
+            });
+// });
+
+        $(document).on('click', ".clickaqnty", function () {
+            clrdiv = ''; setallinfo = '';
+            qty = 0; tot = 0; //$("#AssignedQty_" + seledtedID).text(clrdiv);
+            $("#RequirementList_0__AssignedQuanity").val('');
+            $(".clickaqnty:checked").each(function () {
+                seledtedID = $(this).attr('id');
+                qty = $("#Quanity_" + seledtedID).text();
+                $("#AssignedQty_" + seledtedID).text(qty);
+                tot = parseInt(qty) + parseInt(tot);
+                qty = $("#Quanity_" + seledtedID).text();
+                setallinfo = setallinfo+seledtedID + "-" + qty + ",";
+            });
+            $("#FormSubmit_Quantity").val(tot);
+            ssetallinfo = setallinfo.slice(0, -1);
+            $("#RequirementList_0__AssignedQuanity").val(ssetallinfo);
+        });
+
+        $("#FormSubmit_Quantity").blur(function () {
+            assignedQty = $("#FormSubmit_Quantity").val();
+            avaliableQty = $("#AvaliableQuantityValue").val();
+            remainQty = assignedQty; setallinfo = '';
+            $('input:checkbox').prop('checked', false);
+            $("#RequirementList_0__AssignedQuanity").val('');
+            qty = 0; tot = 0;
+            if (parseInt(assignedQty) != 0) {
+                if (parseInt(assignedQty) <= parseInt(avaliableQty)) {
+
+                    $('input[type=checkbox]').each(function () {
+                        seledtedID = $(this).attr('id');
+                        qty = $("#Quanity_" + seledtedID).text();
+                        if (parseInt(qty) <= parseInt(remainQty)) {
+
+                            remainQty = parseInt(remainQty) - parseInt(qty);
+                            $("#AssignedQty_" + seledtedID).text(qty);
+                            $("#" + seledtedID).prop('checked', true);
+                            setallinfo = seledtedID + "-" + qty + ",";
+                            //return false;
+                        }
+                        else
+                        {
+                            if (parseInt(remainQty) >= 0)
+                            {
+                                $("#AssignedQty_" + seledtedID).text(remainQty);
+                                $("#" + seledtedID).prop('checked', true);
+                                setallinfo = setallinfo + seledtedID + "-" + remainQty;
+                                return false;
+                            }
+                        }
+
+                    });
+                }
+                else {
+                    $("#FormSubmit_Quantity").val(0);
+                    alert("Assigning quantity can't be grater then avaliable quanity");
+                    return false;
+                }
+            }
+            $("#RequirementList_0__AssignedQuanity").val(setallinfo);
+
+           // alert($("#RequirementList_0__AssignedQuanity").val());
+        });
+        $("#FormSubmit_Quantity").focus(function () {
+            clsVal = '';
+            $("#validationMsg").html(clsVal);
+        });
+
+  
+
+        function setDate(date)
+        {
+            var completedDateText =date;
+            var completedDate = new Date(parseInt(completedDateText.replace("/Date(", "").replace(")/")));
+            var dd = completedDate.getDate();
+            var mm = completedDate.getMonth() + 1; //January is 0!
+            var yyyy = completedDate.getFullYear();
+            if (dd < 10) { dd = '0' + dd }
+            if (mm < 10) { mm = '0' + mm }
+            return ( dd + '/' + mm + '/' + yyyy);
+        }
+
+});
+</script>

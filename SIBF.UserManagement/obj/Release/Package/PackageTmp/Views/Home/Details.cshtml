@@ -1,0 +1,74 @@
+﻿@model SIBF.UserManagement.Api.MembershipUser
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details of @Html.DisplayFor(model => model.Username)</h2>
+
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt>
+            Created On
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CreationDate)
+        </dd>
+        <dt>
+            Approved
+        </dt>        
+        <dd>@(Model.IsApproved ? "true" : "false")</dd>
+        <dt>Locked</dt>
+        <dd>@(Model.IsLockedout ? "true" : "false")</dd>
+        <dt>Last Activity</dt>
+        <dd> @Html.DisplayFor(model => model.LastActivityDate)</dd>
+        <dt>
+            Last Logged in
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LastLoginDate)
+        </dd>
+        <dt>
+            Last Password Changed
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LastPasswordChangedDate)
+        </dd>
+        <dt>
+            Comment
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Comment)
+        </dd>
+        <dt>
+            Created By
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CreatedBy)
+        </dd>
+        <dt>
+            Modified By
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ModifiedBy)
+        </dd>
+        <dt>
+            Change Password
+        </dt>
+        <dd>
+            @(Model.UserMustChangePassword ? "true" : "false")
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    @Html.ActionLink("Back to List", "Employees")
+</p>

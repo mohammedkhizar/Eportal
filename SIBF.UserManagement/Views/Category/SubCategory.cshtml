@@ -1,0 +1,208 @@
+﻿@model SIBF.UserManagement.Models.SubCategoryModels
+
+@{
+    ViewBag.Title = "Categorys";
+}
+<style>
+ 
+tbody {
+    display:block;
+    height:500px;
+    overflow:auto;
+}
+thead, tbody tr {
+    display:table;
+    width:100%;
+    table-layout:fixed;/* even columns width , fix width of table too*/
+}
+
+</style>
+<h2>Create New Sub Category</h2>
+<hr />
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6">
+            @using (Html.BeginForm())
+            {
+                <div class="form-horizontal">
+
+                    
+                    @if (ViewBag.SuccessMsg != null)
+                    {
+                        <p class="text-info">@ViewBag.SuccessMsg</p>
+                    }
+                    @if (ViewBag.Failuremessage != null)
+                    {
+                        <p class="text-danger">@ViewBag.Failuremessage</p>
+                    }
+
+
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubmitFormModel.CategoryName, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-6">
+                            @Html.DropDownListFor(model => model.SubmitFormModel.CategoryID, new SelectList(ViewBag.Categories, "CategoryId", "CategoryName"), new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubmitFormModel.SubCategoryName, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-6">
+                            @Html.EditorFor(model => model.SubmitFormModel.SubCategoryName, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.SubmitFormModel.SubCategoryName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubmitFormModel.SubCategoryDescription, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-6">
+                            @Html.EditorFor(model => model.SubmitFormModel.SubCategoryDescription, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.SubmitFormModel.SubCategoryDescription, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            @Html.HiddenFor(model => model.SubmitFormModel.SubCategoryID)
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-4 col-md-10">
+                            <input type="submit" value="Submit" class="btn btn-default" id="submit" />
+                        </div>
+                    </div>
+                </div>
+
+            }
+        </div>
+        <div class="col-lg-6">
+            <p class="alert-info" id="deleteMsg"></p>
+            @using (Html.BeginForm())
+            {
+
+                <table class="table table-responsive table-bordered table-striped" style="background-color:#fff;">
+                    <tr>
+                        <th style="text-align: center;">
+                             Category
+                        </th>
+                        <th style="text-align: center;">SubCategory</th>
+                        <th style="text-align: center;">
+                            Description
+                        </th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+
+                    @foreach (var item in Model.ListDataModel.SubCategorys)
+                    {
+                        //string[] categorydetials = item.CategoryName.Split('>');
+                        <tr id="row_@item.SubCategoryId">
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CategoryName) 
+                            </td>
+                            <td id="itemname_@item.SubCategoryId">
+                                @Html.DisplayFor(modelItem => item.SubCategoryName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.SubCategoryDesc)
+                            </td>
+                            <td>
+                                <a href="#" class="editElementById" id="edit_@item.SubCategoryId">
+                                    <img src="@Url.Content("~/Content/Images/edit.ico")" , alt="Delete" />
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="#" class="deleteElement" id="@item.SubCategoryId">
+                                    <img src="@Url.Content("~/Content/Images/delete.ico")" , alt="Delete" />
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </table>
+                <br />
+
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#SubmitFormModel_SubCategoryID").val('0');
+        $(".deleteElement").click(function () {
+            selRow = this.id;
+            seletedElementData = $.trim($("#itemname_" + selRow).html());
+            resultClick = confirm("You are sure you want to delete : " + seletedElementData);
+            if (resultClick == true) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DeleteSubCategory")',
+                    dataType: 'json',
+                    data: {
+                        id: selRow,
+                        tablename: 'ItemCategory',
+                        colName: 'item_category_id'
+                    },
+                    success: function (data) {
+                        if (data == true) {
+                            setRowSeleted = "#row_" + selRow;
+                            $(setRowSeleted).remove();
+                            $("#deleteMsg").html('Delete successfully');
+                        }
+                        else {
+                            $("#deleteMsg").html('Delete is not possiable as it dependent products');
+                        }
+                    },
+                    error: function (ex) {
+                        var r = jQuery.toString(response.responseText);
+                        alert("Message: " + r.Message);
+                        alert("StackTrace: " + r.StackTrace);
+                        alert("ExceptionType: " + r.ExceptionType);
+                    }
+                });
+            }
+            else {
+                return false;
+            }
+        });
+
+        $(".editElementById").click(function () {
+            selRow = this.id;
+            var selRow = selRow.split("_");
+            seletedElementData = $.trim($("#itemname_" + selRow[1]).html());
+            resultClick = confirm("You are sure you want to edit : " + seletedElementData);
+            if (resultClick == true) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("EditSubCategoryById")',
+                    dataType: 'json',
+                    data: {
+                        id: selRow[1]
+                    },
+                    success: function (data) {
+                        var items = '';
+                        $.each(data, function (i, item) {
+                            $("#SubmitFormModel_SubCategoryName").val(item.SubCategoryName);
+                            $("#SubmitFormModel_SubCategoryDescription").val(item.SubCategoryDesc);
+                            $("#SubmitFormModel_SubCategoryID").val(item.SubCategoryId);
+                            $("#SubmitFormModel_CategoryID").prepend("<option value='" + item.CategoryId + "'>" + item.CategoryName + "</option>").val(item.CategoryId);
+                            $("#submit").val("Edit");
+                        })
+                        },
+                    error: function (ex) {
+                        var r = jQuery.toString(response.responseText);
+                        alert("Message: " + r.Message);
+                        alert("StackTrace: " + r.StackTrace);
+                        alert("ExceptionType: " + r.ExceptionType);
+                    }
+                });
+            }
+            else {
+                return false;
+            }
+        });
+    });
+</script>

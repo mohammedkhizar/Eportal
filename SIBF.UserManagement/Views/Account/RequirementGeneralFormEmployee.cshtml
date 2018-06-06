@@ -1,0 +1,325 @@
+﻿@using X.PagedList.Mvc;
+@model SIBF.UserManagement.Models.RequirementGeneralFormModel
+
+@{
+    ViewBag.Title = "Submit Requirement";
+}
+
+<div class="container">
+    <div class="row">
+        <h2>Assign Product To User</h2>
+        @if (ViewBag.SuccessMsg != null)
+        {
+            <p class="text-info">@ViewBag.SuccessMsg</p>
+        }
+        else if (ViewBag.Failuremessage != null)
+        {
+            <p class="text-danger">@ViewBag.Failuremessage</p>
+        }
+        <p class="text-danger" id="validationMsg"></p>
+        <hr />
+        <div class="col-lg-6">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-horizontal">
+                    <h4>RequirementGeneralFormModel</h4>
+                    <hr />
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CategoryID, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.DropDownListFor(model => model.CategoryID, new SelectList(ViewBag.CategoryList, "CategoryID", "CategoryName", 1), "Please Select Category", new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubCategoryID, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.DropDownListFor(model => model.SubCategoryID, new SelectList(ViewBag.SubCategoryList, "SubCategoryID", "SubCategoryName", 1), "Please Select Sub-Category", new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ProductID, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.DropDownListFor(model => model.ProductID, new SelectList(ViewBag.ProductList, "ProductID", "ProductName"), new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ProductQuantity, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.ProductQuantity, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.ProductQuantity, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    @Html.Hidden("usernamesession", @HttpContext.Current.User.Identity.Name)
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-8">
+                            <input type="submit" id="addtocart" value="Add To List" class="btn btn-default" />
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-lg-6">
+            <div id="divLoader" style="display:none;">
+                <img src="~/Content/Images/ajax-loader.gif" alt="Saving List!" />
+            </div>
+            <p id="msgDataSave"></p>
+            <table id="cartlist" class="table table-responsive table-bordered table-striped" style="background-color:#fff;">
+                <tr>
+                    <th style="text-align: center;">
+                        Category
+                    </th>
+                    <th style="text-align: center;">
+                        Sub Category
+                    </th>
+                    <th style="text-align: center;">
+                        Product Name
+                    </th>
+                    <th style="text-align: center;">Quantity</th>
+                    <th>Delete</th>
+                </tr>
+                <tbody id="cart"></tbody>
+            </table>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-8">
+                    <input type="submit" id="submitlist" value="Submit" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+            $(document).ready(function () {
+                $("#msgDataSave").html("By click on submit button make a request!");
+                $("#FormSubmit_Quantity").focus(function () {
+                    clsVal = '';
+                    $("#validationMsg").html(clsVal);
+                });
+
+                $("#FormSubmit_Quantity").blur(function () {
+                    AvaliableQuantity = $("#AvaliableQuantityValue").val();
+                    EnterQuantity = $("#FormSubmit_Quantity").val();
+                    if (EnterQuantity <= AvaliableQuantity) {
+                        return true;
+                    }
+                    else if (EnterQuantity > AvaliableQuantity || EnterQuantity == 0) {
+                        clsVal = '';
+                        $("#validationMsg").html("Assigned quantity should not grater then or equal to zero!");
+                        $("#FormSubmit_Quantity").val(clsVal);
+                        return false;
+                    }
+                });
+
+
+                $("#CategoryID").change(function () {
+                    var id = this.value;
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/ProductEntry/GetSubCategoryByID")',
+                        dataType: 'json',
+                        data: {
+                            id: id
+                        },
+                        success: function (data) {
+                            $('select#SubCategoryID').empty();
+                            $.each(data, function (key, item) {
+                                var catdetails = item.SubCategoryName;
+                                //var catdetails =catdetails.substring(0,50);
+                                $('#SubCategoryID').append(
+                                $('<option></option>').val(item.SubCategoryId).html(catdetails));
+                            });
+                            // GetSubCateogryDataByID
+                            // console.wrtie(data);
+                            // console.log('tables: ' + JSON.stringify(data));
+
+                        },
+                        error: function (ex) {
+                            var r = jQuery.toString(response.responseText);
+                            alert("Message: " + r.Message);
+                            alert("StackTrace: " + r.StackTrace);
+                            alert("ExceptionType: " + r.ExceptionType);
+                        }
+                    });
+                });
+
+                $("#SubCategoryID").change(function () {
+                    var id = this.value;
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/ProductEntry/GetProductBySubCategoryID")',
+                        dataType: 'json',
+                        data: {
+                            id: id
+                        },
+                        success: function (data) {
+                            $('select#ProductID').empty();
+                            $.each(data, function (key, item) {
+                                var catdetails = item.ProductName;
+                                //var catdetails =catdetails.substring(0,50);
+                                $('#ProductID').append(
+                                $('<option></option>').val(item.ProductID).html(catdetails));
+                            });
+                            // GetSubCateogryDataByID
+                            // console.wrtie(data);
+                            // console.log('tables: ' + JSON.stringify(data));
+
+                        },
+                        error: function (ex) {
+                            var r = jQuery.toString(response.responseText);
+                            alert("Message: " + r.Message);
+                            alert("StackTrace: " + r.StackTrace);
+                            alert("ExceptionType: " + r.ExceptionType);
+                        }
+                    });
+                });
+
+                $("#addtocart").click(function () {
+                    
+                    var catID = $("#CategoryID").val();
+                    var subCatID = $("#SubCategoryID").val();
+                    var prodID = $("#ProductID").val();
+                    var prodQuantity = $("#ProductQuantity").val();
+
+                    var catText = $("#CategoryID option:selected").text();
+                    var subCatText = $("#SubCategoryID option:selected").text();
+                    var prodText = $("#ProductID option:selected").text();
+                    var UserText = $("#usernamesession").val();
+
+                    var setData = catID + '^' + subCatID + '^' + prodID + '^' + prodQuantity + '^' + UserText;
+                    row = $("<tr id='" + setData + "'></tr>");
+                    col1 = $("<td>"+ catText +"</td>");
+                    col2 = $("<td>" + subCatText + "</td>");
+                    col3 = $("<td>" + prodText + "</td>");
+                    col4 = $("<td>" + prodQuantity + "</td>");
+                    col5 = $("<td><a href='#' class='removeprod'><img src='@Url.Content("~/Content/Images/delete.ico")' alt='Delete' /></td></a>");
+                    row.append(col1, col2, col3, col4, col5).prependTo("#cart");
+                    return false;
+                });
+
+                $('body').on('click', 'a.removeprod', function () {
+                    var trid = $(this).closest('tr').attr('id');
+                    document.getElementById("cart").deleteRow(trid);
+                });
+
+                $("#submitlist").click(function () {
+                    $("#divLoader").show();
+                    var i = 0;
+                    var rowCount = $('#cart tr').length;
+                    if (rowCount == 0) {
+                        alert("Please perpare list");
+                        $("#divLoader").hide();
+                        return false;
+                    }
+                    else {
+                        $("#cart tr").each(function (e) {
+                            i = i + 1;
+                            var seltedid = this.id; alert(seltedid);
+                            list = seltedid.split("^");
+                            var catID = list[0]; var subCatID = list[1]; var prodID = list[2]; var quanlityNumber = list[3]; var userName = list[4];
+                            $.ajax({
+                                type: 'GET',
+                                url: '@Url.Content("~/ProductEntry/saveRequirementList")',
+                                dataType: 'json',
+                                data: {
+                                    catID: catID,
+                                    subCatID: subCatID,
+                                    prodID: prodID,
+                                    quanlityNumber: quanlityNumber,
+                                    userName: userName
+                                },
+                                success: function (data) {
+                                    if (data == true) {
+                                        if (i == rowCount)
+                                        {
+                                            $("#divLoader").hide(); $("#cart").empty();
+                                            $("#msgDataSave").html("Request made successfully");
+                                        }
+                                    }
+                                    else {
+                                        $("#divLoader").hide(); $("#cart").empty();
+                                        $("#msgDataSave").html("Problem while saving,Please try again!");
+                                    }
+                                },
+                                error: function (ex) {
+                                    $("#divLoader").hide(); $("#cart").empty();
+                                    var r = jQuery.toString(response.responseText);
+                                    alert("Message: " + r.Message);
+                                    alert("StackTrace: " + r.StackTrace);
+                                    alert("ExceptionType: " + r.ExceptionType);
+                                }
+                            });
+                        });
+                    }
+                });
+
+                //$("#FormSubmit_UserRoll").change(function () {
+
+                //    var selectedDesignaiton = $("#FormSubmit_UserRoll").val();
+                //    if (selectedDesignaiton == "Bell Boy" || selectedDesignaiton == "Cleaner")
+                //    { $("#FormSubmit_Email").attr("readonly", true); }
+                //    else
+                //    { $("#FormSubmit_Email").attr("readonly", false); }
+                //});
+
+                $("#CompanyId").change(function () {
+                    var id = this.value;
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("GetDepartmentByCompanyID")',
+                        dataType: 'json',
+                        data: {
+                            id: id
+                        },
+                        success: function (data) {
+                            $('#DepratmentId').empty();
+                            $.each(data, function (key, item) {
+                                $('#DepratmentId').append(
+                                $('<option></option>').val(item.DepartmentID).html(item.DepartmentName));
+                            });
+                        },
+                        error: function (ex) {
+                            var r = jQuery.toString(response.responseText);
+                            alert("Message: " + r.Message);
+                            alert("StackTrace: " + r.StackTrace);
+                            alert("ExceptionType: " + r.ExceptionType);
+                        }
+                    });
+                });
+
+
+                $("#DepratmentId").change(function () {
+                    var deptid = this.value;
+                    var companyid=$("#CompanyId").val();
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("GetUserByDepartmentCompanyID")',
+                        dataType: 'json',
+                        data: {
+                            deptid: deptid,
+                            companyid: companyid
+                        },
+                        success: function (data) {
+                            $('#UserName').empty();
+                            $.each(data, function (key, item) {
+                                $('#UserName').append(
+                                $('<option></option>').val(item.Username).html(item.Username));
+                            });
+                        },
+                        error: function (ex) {
+                            var r = jQuery.toString(response.responseText);
+                            alert("Message: " + r.Message);
+                            alert("StackTrace: " + r.StackTrace);
+                            alert("ExceptionType: " + r.ExceptionType);
+                        }
+                    });
+                });
+            });
+</script>

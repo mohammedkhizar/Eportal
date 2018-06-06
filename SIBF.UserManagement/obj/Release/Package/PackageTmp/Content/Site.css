@@ -1,0 +1,42 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+    /* background-image: url("Images/headerBg.jpg"); */
+}
+
+.dashborad-bkgrnd {
+   /* background-image: url("Images/headerBg.jpg");*/
+    background-color: #7bb0c2; 
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+.headusername {
+    color: rgba(252, 69, 19, 0.76);
+    font-weight: 800;
+    margin-right: -60px;
+    margin-bottom: 18px;
+    margin-top: 47px;
+}
+.navbar-inverse {
+    background-color: none;
+    border-color: none;
+}

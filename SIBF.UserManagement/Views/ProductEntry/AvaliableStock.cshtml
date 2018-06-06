@@ -1,0 +1,50 @@
+﻿@using X.PagedList.Mvc;
+@model SIBF.UserManagement.Models.ViewStockModel
+
+@{
+    ViewBag.Title = "Avaliable Stock";
+   // ViewBag.StockHistory
+     //   ViewBag.AssignedStock
+}
+
+<h2>Avaliable Stock</h2>
+@using (Html.BeginForm())
+{
+
+    <table class="table table-responsive table-bordered table-striped" style="background-color:#fff;">
+        <tr>
+            <th style="text-align: center;">
+               Category
+            </th>
+            <th style="text-align: center;">
+               SubCategory
+            </th>
+            <th style="text-align: center;">
+               Product Name
+            </th>
+            <th>
+                Avaliable Stock
+            </th>
+        </tr>
+
+        @foreach (var item in Model.AllStockData)
+        {
+           
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CategoryName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SubCategoryName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IntQuantity)
+                
+                </td>
+            </tr>
+        }
+    </table>
+}

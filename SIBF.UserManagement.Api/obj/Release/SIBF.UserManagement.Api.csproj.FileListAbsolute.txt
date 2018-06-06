@@ -1,0 +1,6 @@
+C:\CSharpPorjects\UserManagement\SIBF.UserManagement.Api\bin\Release\SIBF.UserManagement.Api.dll
+C:\CSharpPorjects\UserManagement\SIBF.UserManagement.Api\bin\Release\SIBF.UserManagement.Api.pdb
+C:\CSharpPorjects\UserManagement\SIBF.UserManagement.Api\bin\Release\NLog.xml
+C:\CSharpPorjects\UserManagement\SIBF.UserManagement.Api\obj\Release\SIBF.UserManagement.Api.csprojResolveAssemblyReference.cache
+C:\CSharpPorjects\UserManagement\SIBF.UserManagement.Api\obj\Release\SIBF.UserManagement.Api.dll
+C:\CSharpPorjects\UserManagement\SIBF.UserManagement.Api\obj\Release\SIBF.UserManagement.Api.pdb
